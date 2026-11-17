@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Roblox Live Review — Dashboard</title>
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot"></span>
+        <div>
+          <h1>Roblox Live Review</h1>
+          <p class="muted small">Automasi review akun Roblox untuk TikTok LIVE</p>
+        </div>
+      </div>
+
+      <div class="live-controls">
+        <span id="tiktok-status" class="pill pill-idle">idle</span>
+        <select id="mode-select" class="input compact">
+          <option value="demo">demo (event palsu)</option>
+          <option value="live">live (TikTok)</option>
+        </select>
+        <input id="live-username" class="input compact" placeholder="username TikTok" value="demo" />
+        <button id="btn-start-live" class="btn btn-primary">Start Live Monitor</button>
+        <button id="btn-stop-live" class="btn">Stop</button>
+        <button id="btn-emergency" class="btn btn-danger">Emergency Stop</button>
+      </div>
+    </header>
+
+    <p id="tiktok-detail" class="muted small detail-line">Listener belum berjalan.</p>
+
+    <main class="grid">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Permintaan masuk</h2>
+          <span id="queue-count" class="badge">0 menunggu</span>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Roblox</th>
+              <th>TikTok</th>
+              <th>Paket</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="queue-body">
+            <tr><td colspan="6" class="muted">Belum ada permintaan.</td></tr>
+          </tbody>
+        </table>
+
+        <form id="manual-form" class="row wrap gap">
+          <input id="manual-username" class="input" placeholder="username Roblox" required />
+          <select id="manual-package" class="input compact"></select>
+          <input id="manual-txn" class="input compact" placeholder="kode transaksi (opsional)" />
+          <button class="btn" type="submit">Tambah manual</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Pembayaran menunggu</h2>
+        </div>
+        <ul id="pending-list" class="list">
+          <li class="muted small">Tidak ada pembayaran menunggu.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Preview review</h2>
+          <span id="preview-source" class="badge">—</span>
+        </div>
+        <div class="review-card">
+          <img id="preview-avatar" class="avatar" alt="" />
+          <div class="review-head">
+            <h3 id="preview-username">Belum ada review</h3>
+            <p id="preview-display" class="muted small">Naskah akan muncul setelah review pertama selesai.</p>
+          </div>
+          <div class="score">
+            <span id="preview-score">–</span>
+            <small id="preview-verdict">—</small>
+          </div>
+        </div>
+        <div id="preview-stats" class="tiles"></div>
+        <p id="preview-narration" class="narration muted">Naskah belum tersedia.</p>
+        <p id="preview-note" class="note"></p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Kontrol suara</h2>
+          <span id="speech-state" class="badge">idle</span>
+        </div>
+        <p id="speech-detail" class="muted small">Tidak ada audio yang diputar.</p>
+        <div class="row wrap gap">
+          <button id="btn-skip" class="btn">Skip</button>
+          <button id="btn-pause" class="btn">Pause antrean</button>
+          <button id="btn-mute" class="btn">Mute</button>
+        </div>
+        <p class="muted small" style="margin-top: 10px">
+          Pause menghentikan pengambilan audio berikutnya (bukan memotong kalimat yang sedang berjalan).
+          Mute melewati pemutaran tapi review tetap ditandai selesai.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Statistik</h2></div>
+        <div id="stats-grid" class="tiles"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Settings</h2></div>
+        <form id="settings-form" class="form">
+          <label>
+            Suara default
+            <select id="set-voice" class="input"></select>
+          </label>
+          <label>
+            Suara VIP
+            <select id="set-alt-voice" class="input"></select>
+          </label>
+          <label>
+            Device audio (kosong = default Windows)
+            <input id="set-device" class="input" placeholder="CABLE Input (VB-Audio Virtual Cable)" />
+          </label>
+          <label class="checkbox">
+            <input id="set-ai" type="checkbox" /> Pakai AI (Ollama) untuk naskah
+          </label>
+          <label>
+            Model Ollama
+            <input id="set-ai-model" class="input" placeholder="qwen3.5:9b" />
+          </label>
+          <button class="btn btn-primary" type="submit">Simpan settings</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Log</h2>
+          <span class="badge">terakhir 40</span>
+        </div>
+        <ul id="log-list" class="logs"></ul>
+      </section>
+    </main>
+
+    <footer class="footnote">
+      Harga yang ditampilkan adalah harga katalog / resale saat ini, bukan total uang yang pernah dikeluarkan pemilik akun.
+      Daftar Limited hanya yang terlihat publik; inventory privat ditampilkan sebagai <em>Unavailable</em>.
+    </footer>
+
+    <div id="toast" class="toast hidden"></div>
+    <script type="module" src="/js/dashboard.js"></script>
+  </body>
+</html>

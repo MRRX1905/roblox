@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <title>Overlay — Alerts</title>
+    <link rel="stylesheet" href="/overlays/overlay.css" />
+  </head>
+  <body>
+    <div id="alert" class="alert hidden"></div>
+
+    <script type="module">
+      const el = document.getElementById('alert');
+      let hideTimer;
+      let lastAt = null;
+
+      function show(alert) {
+        if (!alert || alert.at === lastAt) return;
+        lastAt = alert.at;
+        el.textContent = alert.message ?? '';
+        el.classList.remove('hidden');
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = '';
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => el.classList.add('hidden'), 6000);
+      }
+
+      const events = new EventSource('/api/events');
+      events.addEventListener('state', (event) => {
+        const state = JSON.parse(event.data);
+        show(state.alert);
+      });
+    </script>
+  </body>
+</html>

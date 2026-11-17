@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <title>Overlay — Antrean</title>
+    <link rel="stylesheet" href="/overlays/overlay.css" />
+  </head>
+  <body>
+    <div class="queue">
+      <h1>Antrean review</h1>
+      <ol id="list"><li><span class="muted">Kosong</span></li></ol>
+    </div>
+
+    <script type="module">
+      const list = document.getElementById('list');
+      let signature = '';
+
+      function render(queue = []) {
+        const next = JSON.stringify(queue.map((q) => [q.id, q.position]));
+        if (next === signature) return;
+        signature = next;
+        if (!queue.length) {
+          list.innerHTML = '<li><span>Kosong</span><small>Tunggu</small></li>';
+          return;
+        }
+        // Nama pengguna berasal dari luar (chat/manual), jadi dibuat lewat DOM,
+        // bukan innerHTML.
+        list.replaceChildren(
+          ...queue.slice(0, 8).map((q) => {
+            const li = document.createElement('li');
+            const name = document.createElement('span');
+            name.textContent = q.username ?? '';
+            const pkg = document.createElement('small');
+            pkg.textContent = String(q.package ?? '').replace('_', ' ');
+            li.append(name, pkg);
+            return li;
+          }),
+        );
+      }
+
+      const events = new EventSource('/api/events');
+      events.addEventListener('state', (event) => {
+        const state = JSON.parse(event.data);
+        render(state.queue ?? []);
+      });
+    </script>
+  </body>
+</html>

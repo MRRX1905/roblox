@@ -1,0 +1,25 @@
+{
+  "name": "roblox-live-review",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Otomasi review akun Roblox untuk TikTok LIVE: data Roblox, naskah review, suara, antrean, dashboard, overlay OBS.",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "dev": "node --env-file-if-exists=.env --watch src/server.js",
+    "test": "node --test",
+    "probe:roblox": "node --env-file-if-exists=.env src/scripts/probe-roblox.js",
+    "probe:tts": "node --env-file-if-exists=.env src/scripts/probe-tts.js",
+    "audio:devices": "node src/scripts/list-audio-devices.js",
+    "seed:demo": "node --env-file-if-exists=.env src/scripts/seed-demo.js"
+  },
+  "dependencies": {
+    "effect": "^4.0.2",
+    "express": "^5.1.0",
+    "msedge-tts": "^2.1.1",
+    "tiklive": "0.6.0"
+  }
+}

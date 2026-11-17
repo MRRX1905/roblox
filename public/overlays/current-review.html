@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <title>Overlay — Review Aktif</title>
+    <link rel="stylesheet" href="/overlays/overlay.css" />
+  </head>
+  <body>
+    <div id="card" class="card hidden">
+      <div class="head">
+        <img id="avatar" alt="" />
+        <div>
+          <div id="name" class="name"></div>
+          <div id="sub" class="sub"></div>
+        </div>
+        <div>
+          <div id="score" class="score"></div>
+          <div id="verdict" class="verdict"></div>
+        </div>
+      </div>
+      <div id="tiles" class="tiles"></div>
+      <div id="note" class="note hidden"></div>
+    </div>
+    <div class="disclaimer">Harga katalog saat ini, bukan total pengeluaran pemilik akun.</div>
+
+    <script type="module">
+      const card = document.getElementById('card');
+      const avatar = document.getElementById('avatar');
+      const name = document.getElementById('name');
+      const sub = document.getElementById('sub');
+      const score = document.getElementById('score');
+      const verdict = document.getElementById('verdict');
+      const tiles = document.getElementById('tiles');
+      const note = document.getElementById('note');
+
+      const fmt = (n) => (n === null || n === undefined ? 'Unavailable' : Number(n).toLocaleString('id-ID'));
+      let renderedRequest = null;
+
+      function render(review) {
+        if (!review) return;
+        if (review.requestId !== renderedRequest) {
+          renderedRequest = review.requestId;
+          card.classList.remove('hidden');
+          card.style.animation = 'none';
+          void card.offsetWidth;
+          card.style.animation = '';
+        }
+        avatar.src = review.headshotUrl || review.avatarUrl || '';
+        avatar.alt = review.username ?? '';
+        name.textContent = review.username ?? '';
+        sub.textContent = review.displayName ? `Display: ${review.displayName}` : '';
+        score.textContent = review.score ?? '–';
+        verdict.textContent = review.verdict ?? '';
+        const stats = review.stats ?? {};
+        tiles.innerHTML = [
+          ['Item outfit', fmt(stats.outfitItems)],
+          ['Nilai outfit', stats.outfitValue ?? 'Unavailable'],
+          ['Limited', stats.limitedCount == null ? 'Unavailable' : fmt(stats.limitedCount)],
+          ['Follower', stats.followers ?? 'Unavailable'],
+        ]
+          .map(([label, value]) => `<div class="tile"><span>${label}</span><b>${value}</b></div>`)
+          .join('');
+        if (review.notes?.length) {
+          note.textContent = review.notes.join(' ');
+          note.classList.remove('hidden');
+        } else {
+          note.classList.add('hidden');
+        }
+      }
+
+      const events = new EventSource('/api/events');
+      const handle = (event) => {
+        const state = JSON.parse(event.data);
+        if (state.review) render(state.review);
+      };
+      events.addEventListener('state', handle);
+      fetch('/api/overlay/state')
+        .then((r) => r.json())
+        .then((data) => data.review && render(data.review))
+        .catch(() => {});
+    </script>
+  </body>
+</html>
